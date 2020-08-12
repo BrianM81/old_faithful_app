@@ -13,7 +13,16 @@ ui <- fluidPage(
                   label = "Number of bins:",
                   min = 1,
                   max = 50,
-                  value = 30)
+                  value = 30),
+      # ----
+      # ADD THIS - double ended range selector
+      # ----
+      sliderInput(inputId = "eruptionLength",
+                  label = "Eruption length (mins):",
+                  min = 0,
+                  max = 10,
+                  value = c(1, 5),
+                  step = 0.25),
     ),
     
     # Show a plot of the generated distribution
@@ -28,6 +37,15 @@ ui <- fluidPage(
 )
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  # ----
+  # ADD THIS
+  # ----
+  data <- reactive(
+    faithful %>%
+      filter(
+        between(eruptions, input$eruptionLength[1], input$eruptionLength[2])
+      )
+  )
   
   # ----
   # ADD THIS
@@ -39,12 +57,16 @@ server <- function(input, output) {
   
   output$distPlot <- renderPlot({
     # draw the histogram with the specified number of bins
-    faithful %>% ggplot(aes(x = waiting)) +
+    # ----
+    # CHANGE THIS TO data()
+    # ----
+    data() %>% ggplot(aes(x = waiting)) +
       geom_histogram(bins = input$bins, col = "white", fill = "darkred") +
       xlab("Waiting time (mins)") +
       ylab("Number of eruptions") +
       ggtitle("Histogram of eruption waiting times")
   })
+<<<<<<< HEAD
   
   # ----
   # ADD THIS
@@ -53,9 +75,36 @@ server <- function(input, output) {
     paste("Number of eruptions in histogram: ", data$num_eruptions)
   })
   
+=======
+>>>>>>> master
 }
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
